@@ -1,12 +1,14 @@
-import { createConnections, getConnection } from 'typeorm'
+import { Connection, createConnection, getConnectionOptions } from 'typeorm'
 
-class Connection {
-  async  create(): Promise<void> {
-    await createConnections()
-  } 
-  async  close(): Promise<void> {
-    await getConnection().close()
-  }
+export default async(): Promise<Connection> => {
+  const defaultOptions = await getConnectionOptions()
+
+  return createConnection(
+    Object.assign(defaultOptions, {
+      database: 
+        process.env.NODE_ENV === "test" 
+          ? "./src/database/database.test.sqlite" 
+          : defaultOptions.database
+    })
+  )
 }
-
-export default new Connection()
